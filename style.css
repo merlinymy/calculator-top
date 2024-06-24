@@ -14,13 +14,65 @@ body {
 
 div {
     border: 1.5px solid black;
+    /* gap: 5px;
+    padding: 5px; */
+    border-radius: 15px;
 }
 
 .calculator-container {
-    
+    display: flex;
     height: 800px;
     max-height: 100vh;
-    width: 600px;
+    width: 493.5px;
     max-width: 100vw;
+    padding: 5px;
+    border: 0px;
+}
 
+.calculator {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 15px;
+}
+
+.display {
+    flex: 1.5;
+}
+
+.buttons {
+    flex: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: stretch; */
+    gap: 5px;
+    /* padding: 5px; */
+    border: 0px;
+}
+
+.buttons > div {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    gap: 5px;
+    padding: 0px;
+    border: 0px;
+}
+
+.buttons > div:nth-child(-n + 4) > div {
+    flex: 1 1 auto;
+}
+
+.final-row .zero {
+    flex: 2.07;
+    /* max-height: 100px; */
+    /* max-width: 218px; */
+}
+.final-row .dot, .final-row .equals {
+    flex: 1;
+    /* max-height: 100px; */
+    /* max-width: 100px; */
 }
