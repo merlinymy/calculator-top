@@ -24,13 +24,32 @@ function displayValue(div) {
     } else {
         a += value;
     }
-    displaySpan.textContent = a;
+    console.log(`inside displayValue(): value of a is ${a}`);
+    displaySpan.textContent = addComma(a);;
 }
 
 function addComma(v) {
-    // add a comma after the leading digit
-    // when there are 4, 7, 10, 13, 16, etc digits
-    let length
+    // split by "." and add comma to the integer part
+    // if int part length > 3
+    // use a counter to keep track the digit
+    // from right to left
+    [int, decimal] = v.split(".");
+    console.log(`inside addComma(): value of a is ${int}`);
+    console.log(`inside addComma(): value of decimal is ${decimal}`);
+
+    let counter = 0;
+    let intWithComma = [];
+    for (let i = int.length - 1; i >= 0; i--) {
+        counter++;
+        if (counter === 4) {
+            counter = 1;
+            intWithComma.unshift(",");
+            intWithComma.unshift(int[i]);
+        } else {
+            intWithComma.unshift(int[i]);
+        }
+    }
+    return decimal !== undefined ? intWithComma.join("").concat(".").concat(decimal) : intWithComma.join("");
 
 }
 
