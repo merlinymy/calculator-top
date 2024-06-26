@@ -1,9 +1,23 @@
-// displayValue and update Value should be two functions
+// TODO: next step is to realize func-1 buttons
+
+// BUGS: after the result returned by "equals",
+// a new number entered appends to the result, 
+
+// 3 + . 
+// javascript.js:85 Uncaught TypeError: Cannot read properties of undefined (reading 'includes')
+// at updateBValue (javascript.js:85:16)/
+// at HTMLButtonElement.<anonymous> (javascript.js:42:13)
+//
+// should act like 3 + 0.0000  
+
 
 let a = "0";
 let b;
 let opt;
 let optArr = [];
+let hasPreviousRes = false;
+let previousB;
+let previousOpt;
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
@@ -14,23 +28,35 @@ let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
 
 equalsBtn.addEventListener("click", () => {
+    let res;
     if (a && b && opt) {
-        let res = calculate(a, b, opt);
-        a = res;
-        b = null;
-        displayValue(res);
-        removeHighlight("func-2-clicked");
-    }
+        res = calculate(a, b, opt);
+        previousB = b;
+        previousOpt = opt;
+    } else if (a && hasPreviousRes) {
+        res = calculate(a, previousB, previousOpt);
+    } else if (a && !hasPreviousRes) {
+        return;
+    } 
+    a = res;
+    b = null;
+    opt = null;
+    displayValue(res);
+    hasPreviousRes = true;
+    removeHighlight("func-2-clicked");
 });
 
 numNodeArr.forEach((div) => {
     div.addEventListener("click", () => {
+        removeHighlight("func-2-clicked");
         if (!opt) {
             updateAValue(div);
             displayValue(a);
+            console.log(`value of the first operand is ${a}`);
         } else {
             updateBValue(div);
             displayValue(b);
+            console.log(`value of the sec operand is ${b}`);
         }
     })
 })
@@ -59,6 +85,9 @@ function updateAValue(div) {
         }
     } else if (a === "0") {
         a = value;
+    } else if (hasPreviousRes) {
+        a = value;
+        hasPreviousRes = false;
     } else {
         a += value;
     }
@@ -66,9 +95,15 @@ function updateAValue(div) {
 
 function updateBValue(div) {
     let value = div.children[0].textContent;
+    if (value === 0) {
+        return;
+    }
     // console.log(`inside updateBValue ${b}`);
     if (value === "\u2022") {
-        if (!b.includes(".")) {
+        if (b === undefined || b=== null) {
+            b = "0.";
+        }
+        else if (!b.includes(".")) {
             b += ".";
         } else {
             return;
@@ -104,8 +139,10 @@ function updateColor(div, styleClass) {
 
 function removeHighlight(styleClass) {
     let prev = optArr.shift();
-    prev.classList.remove(styleClass);
-    prev.id = "hover";
+    if (prev !== undefined) {
+        prev.classList.remove(styleClass);
+        prev.id = "hover";
+    }
 }
 
 function addComma(v) {

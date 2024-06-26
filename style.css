@@ -16,7 +16,7 @@ body {
     padding: 5px;
 }
 
-div {
+button {
     /* border: 1.5px solid green; */
     border-radius: 15px;
 }
@@ -76,12 +76,22 @@ div {
     border: 0px;
 }
 
+.buttons > div > button {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* temp */
 .buttons > div > div {
     flex: 1 1 auto;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
+/* temp */
 /* .zero, .dot {
     border-right: 1.5px solid green;
 } */
