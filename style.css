@@ -94,12 +94,15 @@ span {
 
 
 /* color */
-.func-2 {
+.func-2, .equals {
     color: white;
     background-color: rgb(255, 165, 0);
 }
 
 .func-2#hover:hover {
+    background-color: rgb(255, 207, 118);
+}
+.equals#hover:hover {
     background-color: rgb(255, 207, 118);
 }
 
@@ -119,4 +122,9 @@ span {
 
 .num#hover:hover {
     background-color: rgb(140, 136, 136);
+}
+
+.func-2-clicked {
+    background-color: white;
+    color: rgb(255, 165, 0);
 }

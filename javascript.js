@@ -1,15 +1,46 @@
 let a = "0";
 let b;
 let opt;
+let optArr = [];
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
+let func2NodeArr = document.querySelectorAll(".func-2");
+
 let numArr = [...numNodeArr];
+let func2Arr = [...func2NodeArr];
+
 numNodeArr.forEach((div) => {
     div.addEventListener("click", () => {
         displayValue(div);
     })
 })
+
+func2Arr.forEach((div) => {
+    div.addEventListener("click", () => {
+        updateColor(div, "func-2-clicked");
+    });
+
+})
+
+
+
+// working on operator.
+// only on operator can be selected at a time.
+// store the operator in var opt.
+// user can change their minds and update the operator
+// update b is opt is updated.
+// only cal calculate after a, b and opt is populated.
+
+function updateColor(div, styleClass) {
+    if(optArr.length === 0) {
+        optArr.push(div);
+    } else {
+        optArr.shift().classList.remove("func-2-clicked");
+        optArr.push(div);
+    }
+    div.classList.add("func-2-clicked");
+}
 
 function displayValue(div) {
     let value = div.children[0].textContent;
@@ -24,19 +55,13 @@ function displayValue(div) {
     } else {
         a += value;
     }
-    console.log(`inside displayValue(): value of a is ${a}`);
+    // console.log(`inside displayValue(): value of a is ${a}`);
     displaySpan.textContent = addComma(a);;
 }
 
 function addComma(v) {
     // split by "." and add comma to the integer part
-    // if int part length > 3
-    // use a counter to keep track the digit
-    // from right to left
     [int, decimal] = v.split(".");
-    console.log(`inside addComma(): value of a is ${int}`);
-    console.log(`inside addComma(): value of decimal is ${decimal}`);
-
     let counter = 0;
     let intWithComma = [];
     for (let i = int.length - 1; i >= 0; i--) {
