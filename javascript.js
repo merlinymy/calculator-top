@@ -210,26 +210,51 @@ function calculate(a, b, opt, decimalCount) {
 //     if opt === ""
 // }
 
+function getRoundingDecimal(a, b, operation) {
+    let [aInt,aDecimal] = a.split(".");
+    let [bInt,bDecimal] = b.split(".");
+    if (operation === "add" || operation === "minus") {
+        return Math.max(aDecimal, bDecimal);
+    } else if (operation === "multiply") {
+        return aDecimal + bDecimal;
+    } else {
+
+    }
+}
+
 function add(a, b) {
+    let roundingDecimal = getRoundingDecimal(a, b, "add");
+    console.log(`inside add function. The rounding decimal is ${roundingDecimal}`);
     a = Number.parseFloat(a);
     b = Number.parseFloat(b);
-    return a + b;
+    return Math.round((a + b) * Math.pow(10, roundingDecimal)) /  Math.pow(10, roundingDecimal);
 }
 
 function subtract(a, b) {
+    let roundingDecimal = getRoundingDecimal(a, b, "minus");
     a = Number.parseFloat(a);
     b = Number.parseFloat(b);
-    return a - b;
+    return Math.round((a - b) * Math.pow(10, roundingDecimal)) /  Math.pow(10, roundingDecimal);
 }
 
 function multiply(a, b) {
+    let roundingDecimal = getRoundingDecimal(a, b, "multiply");
     a = Number.parseFloat(a);
     b = Number.parseFloat(b);
-    return a * b;
+    return Math.round((a * b) * Math.pow(10, roundingDecimal)) /  Math.pow(10, roundingDecimal);
 }
 
 function divide(a, b) {
     a = Number.parseFloat(a);
     b = Number.parseFloat(b);
-    return a / b;
+    return handleDivision(a, b);
+}
+
+function handleDivision(a, b) {
+    let dumbRes = a / b;
+    let roundedRes = Math.round((a/b) * Math.pow(10,15)) / Math.pow(10,15);
+    if (Math.abs(roundedRes - dumbRes) < Number.EPSILON * 100) {
+        return roundedRes;
+    }
+    return dumbRes;
 }
