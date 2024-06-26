@@ -14,11 +14,13 @@ let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
 
 equalsBtn.addEventListener("click", () => {
-    let res = calculate(a, b, opt);
-    a = res;
-    b = null;
-    displayValue(res);
-    removeHighlight("func-2-clicked");
+    if (a && b && opt) {
+        let res = calculate(a, b, opt);
+        a = res;
+        b = null;
+        displayValue(res);
+        removeHighlight("func-2-clicked");
+    }
 });
 
 numNodeArr.forEach((div) => {
@@ -125,9 +127,9 @@ function addComma(v) {
 
 
 function calculate(a, b, opt) {
-    console.log(`inside calculate, a value is ${a}`);
-    console.log(`inside calculate, b value is ${b}`);
-    console.log(`inside calculate, operator is ${typeof opt.charCodeAt(0)}`);
+    // console.log(`inside calculate, a value is ${a}`);
+    // console.log(`inside calculate, b value is ${b}`);
+    // console.log(`inside calculate, operator is ${typeof opt.charCodeAt(0)}`);
     // opt = updateOpt(opt);
     switch(opt.charCodeAt(0)) {
         case 43:
