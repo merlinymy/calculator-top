@@ -18,6 +18,7 @@ let optArr = [];
 let hasPreviousRes = false;
 let previousB;
 let previousOpt;
+let decimalCount = 0;
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
@@ -30,11 +31,11 @@ let func2Arr = [...func2NodeArr];
 equalsBtn.addEventListener("click", () => {
     let res;
     if (a && b && opt) {
-        res = calculate(a, b, opt);
+        res = calculate(a, b, opt, decimalCount);
         previousB = b;
         previousOpt = opt;
     } else if (a && hasPreviousRes) {
-        res = calculate(a, previousB, previousOpt);
+        res = calculate(a, previousB, previousOpt, decimalCount);
     } else if (a && !hasPreviousRes) {
         return;
     } 
@@ -64,11 +65,13 @@ numNodeArr.forEach((div) => {
 func2Arr.forEach((div) => {
     div.addEventListener("click", () => {
         updateColor(div, "func-2-clicked");
+        console.log(`inside button a is ${a}, b is ${b}, opt is ${opt}`)
         if (a && b && opt) {
-            let res = calculate(a, b, opt);
+            let res = calculate(a, b, opt, decimalCount);
             a = res;
             b = null;
             displayValue(res);
+            console.log(a, b, opt);
         }
         opt = div.children[0].textContent;
         // console.log(opt.charCodeAt(0));
@@ -146,38 +149,60 @@ function removeHighlight(styleClass) {
 }
 
 function addComma(v) {
+    console.log(v);
+    let intWithComma = [];
     // split by "." and add comma to the integer part
     [int, decimal] = v.split(".");
-    let counter = 0;
-    let intWithComma = [];
-    for (let i = int.length - 1; i >= 0; i--) {
-        counter++;
-        if (counter === 4) {
-            counter = 1;
-            intWithComma.unshift(",");
-            intWithComma.unshift(int[i]);
-        } else {
-            intWithComma.unshift(int[i]);
-        }
+    console.log(typeof decimal + " here!!!!!inside addComma/preprocessing");
+    // console.log(decimal.length + "decimal length: inside addComma/preprocessing");
+    // decimalCount = 0;
+
+    // decimal length for rounding
+    if (decimal === undefined) {
+        console.log("here!!!");
+
+    } else {
+        decimalCount = Math.max(decimalCount, decimal.length || 0);
     }
+    console.log(decimalCount + "decimalCount: inside addComma/preprocessing");
+
+        let counter = 0;
+        for (let i = int.length - 1; i >= 0; i--) {
+            counter++;
+            if (counter === 4) {
+                counter = 1;
+                intWithComma.unshift(",");
+                intWithComma.unshift(int[i]);
+            } else {
+                intWithComma.unshift(int[i]);
+            }
+        }
+        console.log(intWithComma);
+    
+    
     return decimal !== undefined ? intWithComma.join("").concat(".").concat(decimal) : intWithComma.join("");
 }
 
 
-function calculate(a, b, opt) {
+function calculate(a, b, opt, decimalCount) {
     // console.log(`inside calculate, a value is ${a}`);
     // console.log(`inside calculate, b value is ${b}`);
     // console.log(`inside calculate, operator is ${typeof opt.charCodeAt(0)}`);
     // opt = updateOpt(opt);
+    let round = Math.pow(10, decimalCount);
     switch(opt.charCodeAt(0)) {
         case 43:
-            return add(a, b).toString(10);
+            console.log(decimalCount);
+            console.log(add(a,b));
+            console.log(round);
+            console.log(Math.round((add(a, b) + Number.EPSILON) * round) / round);
+            return (Math.round((add(a, b) + Number.EPSILON) * round) / round).toString();
         case 8722:
-            return subtract(a, b).toString(10);
+            return (Math.round((subtract(a, b) + Number.EPSILON) * round) / round).toString();
         case 215:
-            return multiply(a, b).toString(10);
+            return (Math.round((multiply(a, b) + Number.EPSILON) * round) / round).toString();
         case 247:
-            return divide(a, b).toString(10);
+            return (Math.round((divide(a, b) + Number.EPSILON) * round) / round).toString();
     }
 }
 
