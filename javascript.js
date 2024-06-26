@@ -40,7 +40,8 @@ func2Arr.forEach((div) => {
         updateColor(div, "func-2-clicked");
         if (a && b && opt) {
             let res = calculate(a, b, opt);
-            // console.log(res);
+            a = res;
+            b = null;
             displayValue(res);
         }
         opt = div.children[0].textContent;
