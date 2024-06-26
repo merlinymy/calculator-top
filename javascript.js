@@ -36,10 +36,14 @@ function updateColor(div, styleClass) {
     if(optArr.length === 0) {
         optArr.push(div);
     } else {
-        optArr.shift().classList.remove("func-2-clicked");
+        let prev = optArr.shift();
+        prev.classList.remove(styleClass);
+        prev.id = "hover";
+        
         optArr.push(div);
     }
     div.classList.add("func-2-clicked");
+    div.id = "";
 }
 
 function displayValue(div) {
