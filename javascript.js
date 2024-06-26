@@ -169,7 +169,10 @@ function addComma(v) {
         let counter = 0;
         for (let i = int.length - 1; i >= 0; i--) {
             counter++;
-            if (counter === 4) {
+            if (counter === 4 && int[i] === '-') {
+                intWithComma.unshift(int[i]);
+                counter = 3;
+            } else if (counter === 4) {
                 counter = 1;
                 intWithComma.unshift(",");
                 intWithComma.unshift(int[i]);
@@ -192,17 +195,13 @@ function calculate(a, b, opt, decimalCount) {
     let round = Math.pow(10, decimalCount);
     switch(opt.charCodeAt(0)) {
         case 43:
-            console.log(decimalCount);
-            console.log(add(a,b));
-            console.log(round);
-            console.log(Math.round((add(a, b) + Number.EPSILON) * round) / round);
-            return (Math.round((add(a, b) + Number.EPSILON) * round) / round).toString();
+            return add(a, b).toString();
         case 8722:
-            return (Math.round((subtract(a, b) + Number.EPSILON) * round) / round).toString();
+            return subtract(a, b).toString();
         case 215:
-            return (Math.round((multiply(a, b) + Number.EPSILON) * round) / round).toString();
+            return multiply(a, b).toString();
         case 247:
-            return (Math.round((divide(a, b) + Number.EPSILON) * round) / round).toString();
+            return divide(a, b).toString();
     }
 }
 
