@@ -211,14 +211,14 @@ function calculate(a, b, opt, decimalCount) {
 // }
 
 function getRoundingDecimal(a, b, operation) {
-    let [aInt,aDecimal] = a.split(".");
-    let [bInt,bDecimal] = b.split(".");
+    let aDecimal = a.split(".") || 0;
+    let bDecimal = b.split(".") || 0;
+    console.log(`inside getRoundingDecimal. aDecimal is ${aDecimal}`);
+    console.log(`inside getRoundingDecimal. bDecimal is ${bDecimal}`);
     if (operation === "add" || operation === "minus") {
-        return Math.max(aDecimal, bDecimal);
+        return Math.max(aDecimal.length, bDecimal.length);
     } else if (operation === "multiply") {
-        return aDecimal + bDecimal;
-    } else {
-
+        return aDecimal.length + bDecimal.length;
     }
 }
 
