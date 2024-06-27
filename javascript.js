@@ -1,14 +1,7 @@
 // TODO: next step is to realize func-1 buttons
 
-// BUGS: after the result returned by "equals",
-// a new number entered appends to the result, 
-
-// 3 + . 
-// javascript.js:85 Uncaught TypeError: Cannot read properties of undefined (reading 'includes')
-// at updateBValue (javascript.js:85:16)/
-// at HTMLButtonElement.<anonymous> (javascript.js:42:13)
-//
-// should act like 3 + 0.0000  
+// BUGS: after the result returned by "equals"
+// clicking "." won't register "0."
 
 
 let a = "0";
@@ -71,7 +64,7 @@ func2Arr.forEach((div) => {
             a = res;
             b = null;
             displayValue(res);
-            console.log(a, b, opt);
+            // console.log(a, b, opt);
         }
         opt = div.children[0].textContent;
         // console.log(opt.charCodeAt(0));
@@ -81,6 +74,10 @@ func2Arr.forEach((div) => {
 function updateAValue(div) {
     let value = div.children[0].textContent;
     if (value === "\u2022") {
+        if (hasPreviousRes) {
+            a = "0.";
+            hasPreviousRes = false;
+        }
         if (!a.includes(".")) {
             a += ".";
         } else {
@@ -98,9 +95,9 @@ function updateAValue(div) {
 
 function updateBValue(div) {
     let value = div.children[0].textContent;
-    if (value === 0) {
-        return;
-    }
+    // if (value === "0") {
+    //     return;
+    // }
     // console.log(`inside updateBValue ${b}`);
     if (value === "\u2022") {
         if (b === undefined || b=== null) {
@@ -111,7 +108,7 @@ function updateBValue(div) {
         } else {
             return;
         }
-    } else if (b === undefined || b === null) {
+    } else if (b === undefined || b === null || b === "0") {
         b = value;
     } else {
         b += value;
