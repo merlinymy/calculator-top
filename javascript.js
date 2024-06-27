@@ -8,18 +8,30 @@ let a = "0";
 let b;
 let opt;
 let optArr = [];
-let hasPreviousRes = false;
+let isEqualsPressed = false;
 let previousB;
 let previousOpt;
 let decimalCount = 0;
+let enteringNum;
+let displayedValue = 0;
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
 let func2NodeArr = document.querySelectorAll(".func-2");
 let equalsBtn = document.querySelector(".equals");
+let clearBtn = document.querySelector(".clear");
 
 let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
+
+clearBtn.addEventListener("click", () => {
+    if (enteringNum)
+    clearBtn.children[0].textContent = "AC";
+    a = "0";
+    b = null;
+    opt = null;
+    displayValue(a);
+});
 
 equalsBtn.addEventListener("click", () => {
     let res;
@@ -27,16 +39,16 @@ equalsBtn.addEventListener("click", () => {
         res = calculate(a, b, opt, decimalCount);
         previousB = b;
         previousOpt = opt;
-    } else if (a && hasPreviousRes) {
+    } else if (a && isEqualsPressed) {
         res = calculate(a, previousB, previousOpt, decimalCount);
-    } else if (a && !hasPreviousRes) {
+    } else if (a && !isEqualsPressed) {
         return;
     } 
     a = res;
     b = null;
     opt = null;
     displayValue(res);
-    hasPreviousRes = true;
+    isEqualsPressed = true;
     removeHighlight("func-2-clicked");
 });
 
@@ -74,9 +86,9 @@ func2Arr.forEach((div) => {
 function updateAValue(div) {
     let value = div.children[0].textContent;
     if (value === "\u2022") {
-        if (hasPreviousRes) {
+        if (isEqualsPressed) {
             a = "0.";
-            hasPreviousRes = false;
+            isEqualsPressed = false;
         }
         if (!a.includes(".")) {
             a += ".";
@@ -85,9 +97,9 @@ function updateAValue(div) {
         }
     } else if (a === "0") {
         a = value;
-    } else if (hasPreviousRes) {
+    } else if (isEqualsPressed) {
         a = value;
-        hasPreviousRes = false;
+        isEqualsPressed = false;
     } else {
         a += value;
     }
@@ -208,12 +220,11 @@ function calculate(a, b, opt, decimalCount) {
 // }
 
 function getRoundingDecimal(a, b, operation) {
-    let aDecimal = a.split(".") || 0;
-    let bDecimal = b.split(".") || 0;
-    console.log(`inside getRoundingDecimal. aDecimal is ${aDecimal}`);
-    console.log(`inside getRoundingDecimal. bDecimal is ${bDecimal}`);
+    let aDecimal = a.split(".")[1] || 0;
+    let bDecimal = b.split(".")[1] || 0;
+
     if (operation === "add" || operation === "minus") {
-        return Math.max(aDecimal.length, bDecimal.length);
+        return Math.max(aDecimal.toString().length, bDecimal.toString().length);
     } else if (operation === "multiply") {
         return aDecimal.length + bDecimal.length;
     }
