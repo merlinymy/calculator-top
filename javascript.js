@@ -23,9 +23,30 @@ let numNodeArr = document.querySelectorAll(".num");
 let func2NodeArr = document.querySelectorAll(".func-2");
 let equalsBtn = document.querySelector(".equals");
 let clearBtn = document.querySelector(".clear");
+let backBtn = document.querySelector(".delete");
 
 let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
+
+backBtn.addEventListener("click", () => {
+    if (inputingA) {
+        if (a.length === 1) {
+            a = "0";
+        } else {
+            a = a.slice(0, a.length - 1);
+        }
+        displayValue(a);
+    } else if (inputingB) {
+        if (b.length === 1) {
+            b = "0";
+            updateColor(optHolderForClearBtn);
+        } else {
+            b = b.slice(0, b.length - 1);
+        }
+        displayValue(b);
+        
+    }
+});
 
 clearBtn.addEventListener("click", () => {
     if (clearBtn.children[0].textContent === "C") {
@@ -63,6 +84,8 @@ equalsBtn.addEventListener("click", () => {
     opt = null;
     displayValue(res);
     isEqualsPressed = true;
+    inputingB = false;
+    inputingA = true;
     removeHighlight("func-2-clicked");
     // can only AC after equals.
     clearBtn.children[0].textContent = "AC";
@@ -70,7 +93,7 @@ equalsBtn.addEventListener("click", () => {
 
 numNodeArr.forEach((div) => {
     div.addEventListener("click", () => {
-        optHolderForClearBtn = removeHighlight("func-2-clicked");
+        optHolderForClearBtn = removeHighlight("func-2-clicked") || optHolderForClearBtn;
         clearBtn.children[0].textContent = "C";
         if (!opt) {
             inputingA = true;
