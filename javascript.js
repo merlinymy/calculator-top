@@ -14,6 +14,9 @@ let previousOpt;
 let decimalCount = 0;
 let enteringNum;
 let displayedValue = 0;
+let inputingA = false;
+let inputingB = false;
+let optHolderForClearBtn;
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
@@ -25,12 +28,23 @@ let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
 
 clearBtn.addEventListener("click", () => {
-    if (enteringNum)
-    clearBtn.children[0].textContent = "AC";
-    a = "0";
-    b = null;
-    opt = null;
-    displayValue(a);
+    if (clearBtn.children[0].textContent === "C") {
+        if (inputingA) {
+            a = "0";
+            displayValue(a);
+        } else if (inputingB) {
+            b = "0";
+            displayValue(b);
+            updateColor(optHolderForClearBtn);
+        }
+        clearBtn.children[0].textContent = "AC"
+    } else {
+        a = "0";
+        b = null;
+        opt = null;
+        displayValue(a);
+        removeHighlight("func-2-clicked");
+    }
 });
 
 equalsBtn.addEventListener("click", () => {
@@ -50,16 +64,21 @@ equalsBtn.addEventListener("click", () => {
     displayValue(res);
     isEqualsPressed = true;
     removeHighlight("func-2-clicked");
+    // can only AC after equals.
+    clearBtn.children[0].textContent = "AC";
 });
 
 numNodeArr.forEach((div) => {
     div.addEventListener("click", () => {
-        removeHighlight("func-2-clicked");
+        optHolderForClearBtn = removeHighlight("func-2-clicked");
+        clearBtn.children[0].textContent = "C";
         if (!opt) {
+            inputingA = true;
             updateAValue(div);
             displayValue(a);
             console.log(`value of the first operand is ${a}`);
         } else {
+            inputingB = true;
             updateBValue(div);
             displayValue(b);
             console.log(`value of the sec operand is ${b}`);
@@ -69,9 +88,11 @@ numNodeArr.forEach((div) => {
 
 func2Arr.forEach((div) => {
     div.addEventListener("click", () => {
+        inputingA = false;
         updateColor(div, "func-2-clicked");
         console.log(`inside button a is ${a}, b is ${b}, opt is ${opt}`)
         if (a && b && opt) {
+            inputingB = false;
             let res = calculate(a, b, opt, decimalCount);
             a = res;
             b = null;
@@ -155,6 +176,7 @@ function removeHighlight(styleClass) {
         prev.classList.remove(styleClass);
         prev.id = "hover";
     }
+    return prev;
 }
 
 function addComma(v) {
@@ -162,9 +184,6 @@ function addComma(v) {
     let intWithComma = [];
     // split by "." and add comma to the integer part
     [int, decimal] = v.split(".");
-    console.log(typeof decimal + " here!!!!!inside addComma/preprocessing");
-    // console.log(decimal.length + "decimal length: inside addComma/preprocessing");
-    // decimalCount = 0;
 
     // decimal length for rounding
     if (decimal === undefined) {
@@ -173,8 +192,7 @@ function addComma(v) {
     } else {
         decimalCount = Math.max(decimalCount, decimal.length || 0);
     }
-    console.log(decimalCount + "decimalCount: inside addComma/preprocessing");
-
+    // console.log(decimalCount + "decimalCount: inside addComma/preprocessing");
         let counter = 0;
         for (let i = int.length - 1; i >= 0; i--) {
             counter++;
