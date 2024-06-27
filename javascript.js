@@ -8,7 +8,7 @@ let a = "0";
 let b;
 let opt;
 let optArr = [];
-let isEqualsPressed = false;
+let hasPrevRes = false;
 let previousB;
 let previousOpt;
 let decimalCount = 0;
@@ -24,9 +24,20 @@ let func2NodeArr = document.querySelectorAll(".func-2");
 let equalsBtn = document.querySelector(".equals");
 let clearBtn = document.querySelector(".clear");
 let backBtn = document.querySelector(".delete");
+let percentBtn = document.querySelector(".percent");
 
 let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
+
+percentBtn.addEventListener("click", () => {
+    if (inputingA) {
+        a = (a / 100).toString();
+        displayValue(a);
+    } else if (inputingB) {
+        b = (b / 100).toString();
+        displayValue(b); 
+    }
+});
 
 backBtn.addEventListener("click", () => {
     if (inputingA) {
@@ -43,8 +54,7 @@ backBtn.addEventListener("click", () => {
         } else {
             b = b.slice(0, b.length - 1);
         }
-        displayValue(b);
-        
+        displayValue(b); 
     }
 });
 
@@ -74,16 +84,16 @@ equalsBtn.addEventListener("click", () => {
         res = calculate(a, b, opt, decimalCount);
         previousB = b;
         previousOpt = opt;
-    } else if (a && isEqualsPressed) {
+    } else if (a && hasPrevRes) {
         res = calculate(a, previousB, previousOpt, decimalCount);
-    } else if (a && !isEqualsPressed) {
+    } else if (a && !hasPrevRes) {
         return;
     } 
     a = res;
     b = null;
     opt = null;
     displayValue(res);
-    isEqualsPressed = true;
+    hasPrevRes = true;
     inputingB = false;
     inputingA = true;
     removeHighlight("func-2-clicked");
@@ -130,9 +140,9 @@ func2Arr.forEach((div) => {
 function updateAValue(div) {
     let value = div.children[0].textContent;
     if (value === "\u2022") {
-        if (isEqualsPressed) {
+        if (hasPrevRes) {
             a = "0.";
-            isEqualsPressed = false;
+            hasPrevRes = false;
         }
         if (!a.includes(".")) {
             a += ".";
@@ -141,9 +151,9 @@ function updateAValue(div) {
         }
     } else if (a === "0") {
         a = value;
-    } else if (isEqualsPressed) {
+    } else if (hasPrevRes) {
         a = value;
-        isEqualsPressed = false;
+        hasPrevRes = false;
     } else {
         a += value;
     }
@@ -261,8 +271,8 @@ function calculate(a, b, opt, decimalCount) {
 // }
 
 function getRoundingDecimal(a, b, operation) {
-    let aDecimal = a.split(".")[1] || 0;
-    let bDecimal = b.split(".")[1] || 0;
+    let aDecimal = a.split(".")[1] || "0";
+    let bDecimal = b.split(".")[1] || "0";
 
     if (operation === "add" || operation === "minus") {
         return Math.max(aDecimal.toString().length, bDecimal.toString().length);
