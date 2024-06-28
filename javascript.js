@@ -59,10 +59,10 @@ posNegBtn.addEventListener("click", () => {
 percentBtn.addEventListener("click", () => {
     isEqualBtnPressed = false;
     if (inputingA) {
-        a = (a / 100).toString();
+        a = handleDivision(a,100).toString();
         displayValue(a);
     } else if (inputingB) {
-        b = (b / 100).toString();
+        b = handleDivision(b,100).toString();
         displayValue(b); 
     }
 });
@@ -229,7 +229,7 @@ function displayValue(num) {
         return;
     };
     [int, decimal] = preProcess(num);
-    valueToDisplay = addComma(num, int, decimal);
+    valueToDisplay = addComma(int, decimal);
     displaySpan.textContent = valueToDisplay;
     
 }
@@ -288,8 +288,10 @@ function removeHighlight(styleClass) {
     return prev;
 }
 
-function addComma(v, int, decimal) {
-    
+function addComma(int, decimal) {
+    if (int.includes('e')) {
+        return int;
+    }
     let intWithComma = [];
         let counter = 0;
         for (let i = int.length - 1; i >= 0; i--) {
@@ -367,7 +369,7 @@ function handleDivision(a, b) {
     let dumbRes = a / b;
     let roundedRes = Math.round((a/b) * Math.pow(10,15)) / Math.pow(10,15);
     if (Math.abs(roundedRes - dumbRes) < Number.EPSILON * 100) {
-        return roundedRes;
+        return checkFinalResDigits(dumbRes);
     }
     return dumbRes;
 }
