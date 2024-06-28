@@ -17,7 +17,9 @@ let displayedValue = 0;
 let inputingA = true;
 let inputingB = false;
 let optHolderForClearBtn;
-let posOrNeg = 1; //default is positive
+let isANeg = false; //default is positive
+let isBNeg = false;
+let isEqualBtnPressed = false;
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
@@ -32,18 +34,30 @@ let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
 
 posNegBtn.addEventListener("click", () => {
-    // btn click before nums 
-    posOrNeg *= -1;
+
     if (inputingA) {
-        a = (a * -1).toString()
-        displayValue(a);
+        isANeg = !isANeg;
+        a = (a * -1).toString();
+        if (a === "0" || isEqualBtnPressed) {
+            displayValue("-0");
+        } else {
+            displayValue(a);
+        }
     } else if (inputingB) {
-        b = (b * -1).toString();
-        displayValue(b);
+        isBNeg = !isBNeg;
+        b = ((b || 0) * -1).toString();
+        if (b === "0" || b === undefined || b === null) {
+            displayValue("-0");
+        } else {
+            displayValue(b);
+        }
     }
+
+    isEqualBtnPressed = false;
 });
 
 percentBtn.addEventListener("click", () => {
+    isEqualBtnPressed = false;
     if (inputingA) {
         a = (a / 100).toString();
         displayValue(a);
@@ -54,15 +68,16 @@ percentBtn.addEventListener("click", () => {
 });
 
 backBtn.addEventListener("click", () => {
+    isEqualBtnPressed = false;
     if (inputingA) {
-        if (a.length === 1 || (a.length === 2 && a.charAt(0) === '-')) {
+        if (a.length === 1 || (a.length === 2 && a.at(0) === '-')) {
             a = "0";
         } else {
             a = a.slice(0, a.length - 1);
         }
         displayValue(a);
     } else if (inputingB) {
-        if (b.length === 1 || (a.length === 2 && a.charAt(0) === '-')) {
+        if (b.length === 1 || (a.length === 2 && a.at(0) === '-')) {
             b = "0";
             updateColor(optHolderForClearBtn);
         } else {
@@ -77,9 +92,11 @@ clearBtn.addEventListener("click", () => {
         if (inputingA) {
             a = "0";
             displayValue(a);
+            isANeg = false;
         } else if (inputingB) {
             b = "0";
             displayValue(b);
+            isBNeg = false;
             updateColor(optHolderForClearBtn);
         }
         clearBtn.children[0].textContent = "AC"
@@ -87,6 +104,8 @@ clearBtn.addEventListener("click", () => {
         a = "0";
         b = null;
         opt = null;
+        isANeg = false;
+        isBNeg = false;
         displayValue(a);
         removeHighlight("func-2-clicked");
     }
@@ -110,6 +129,9 @@ equalsBtn.addEventListener("click", () => {
     hasPrevRes = true;
     inputingB = false;
     inputingA = true;
+    isANeg = false;
+    isBNeg = false;
+    isEqualBtnPressed = true;
     removeHighlight("func-2-clicked");
     // can only AC after equals.
     clearBtn.children[0].textContent = "AC";
@@ -117,6 +139,7 @@ equalsBtn.addEventListener("click", () => {
 
 numNodeArr.forEach((div) => {
     div.addEventListener("click", () => {
+        isEqualBtnPressed = false;
         optHolderForClearBtn = removeHighlight("func-2-clicked") || optHolderForClearBtn;
         clearBtn.children[0].textContent = "C";
         if (!opt) {
@@ -135,9 +158,12 @@ numNodeArr.forEach((div) => {
 
 func2Arr.forEach((div) => {
     div.addEventListener("click", () => {
+        isEqualBtnPressed = false;
         inputingA = false;
+        isANeg = false;
+        inputingB = true;
         updateColor(div, "func-2-clicked");
-        console.log(`inside button a is ${a}, b is ${b}, opt is ${opt}`)
+        // console.log(`inside button a is ${a}, b is ${b}, opt is ${opt}`)
         if (a && b && opt) {
             inputingB = false;
             let res = calculate(a, b, opt, decimalCount);
@@ -153,15 +179,14 @@ func2Arr.forEach((div) => {
 
 function updateAValue(div) {
     let value = div.children[0].textContent;
+
     if (value === "\u2022") {
-        if (hasPrevRes) {
+        if (hasPrevRes) { // for start a new calculation with decimal after equals is pressed
             a = "0.";
             hasPrevRes = false;
         }
         if (!a.includes(".")) {
             a += ".";
-        } else {
-            return;
         }
     } else if (a === "0") {
         a = value;
@@ -171,27 +196,27 @@ function updateAValue(div) {
     } else {
         a += value;
     }
+    if (isANeg && a.at(0) !== "-") {
+        a = "-" + a;
+    }
 }
 
 function updateBValue(div) {
     let value = div.children[0].textContent;
-    // if (value === "0") {
-    //     return;
-    // }
-    // console.log(`inside updateBValue ${b}`);
     if (value === "\u2022") {
         if (b === undefined || b=== null) {
             b = "0.";
         }
         else if (!b.includes(".")) {
             b += ".";
-        } else {
-            return;
         }
     } else if (b === undefined || b === null || b === "0") {
         b = value;
     } else {
         b += value;
+    }
+    if (isBNeg && b.at(0) !== "-") {
+        b = "-" + b;
     }
 }
 
