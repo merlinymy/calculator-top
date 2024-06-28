@@ -1,8 +1,4 @@
-// TODO: next step is to realize func-1 buttons
-
-// BUGS: after the result returned by "equals"
-// clicking "." won't register "0."
-
+// Author: Merlin. Last update 6/28/2024
 
 let a = "0";
 let b;
@@ -11,8 +7,6 @@ let optArr = [];
 let hasPrevRes = false;
 let previousB;
 let previousOpt;
-let decimalCount = 0;
-let enteringNum;
 let inputingA = true;
 let inputingB = false;
 let optHolderForClearBtn;
@@ -30,11 +24,23 @@ let backBtn = document.querySelector(".delete");
 let percentBtn = document.querySelector(".percent");
 let posNegBtn = document.querySelector(".pos-neg");
 
-let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
 
-posNegBtn.addEventListener("click", () => {
+posNegBtn.addEventListener("click", () => onPosNegSelect());
 
+percentBtn.addEventListener("click", () => onPercentSelect());
+
+backBtn.addEventListener("click", () => onBackBtnSelect());
+
+clearBtn.addEventListener("click", () => onClearSelect());
+
+equalsBtn.addEventListener("click", () => onEqualSelect());
+
+numNodeArr.forEach(div => div.addEventListener("click", () => onNumSelect(div)));
+
+func2Arr.forEach(div => div.addEventListener("click", () => onFuncTwoSelect(div)));
+
+function onPosNegSelect() {
     if (inputingA) {
         isANeg = !isANeg;
         a = (a * -1).toString();
@@ -52,11 +58,10 @@ posNegBtn.addEventListener("click", () => {
             displayValue(b);
         }
     }
-
     isEqualBtnPressed = false;
-});
+}
 
-percentBtn.addEventListener("click", () => {
+function onPercentSelect() {
     isEqualBtnPressed = false;
     if (inputingA) {
         a = handleDivision(a,100).toString();
@@ -65,53 +70,9 @@ percentBtn.addEventListener("click", () => {
         b = handleDivision(b,100).toString();
         displayValue(b); 
     }
-});
+}
 
-backBtn.addEventListener("click", () => {
-    isEqualBtnPressed = false;
-    if (inputingA) {
-        if (a.length === 1 || (a.length === 2 && a.at(0) === '-')) {
-            a = "0";
-        } else {
-            a = a.slice(0, a.length - 1);
-        }
-        displayValue(a);
-    } else if (inputingB) {
-        if (b.length === 1 || (a.length === 2 && a.at(0) === '-')) {
-            b = "0";
-            updateColor(optHolderForClearBtn);
-        } else {
-            b = b.slice(0, b.length - 1);
-        }
-        displayValue(b); 
-    }
-});
-
-clearBtn.addEventListener("click", () => {
-    if (clearBtn.children[0].textContent === "C") {
-        if (inputingA) {
-            a = "0";
-            displayValue(a);
-            isANeg = false;
-        } else if (inputingB) {
-            b = "0";
-            displayValue(b);
-            isBNeg = false;
-            updateColor(optHolderForClearBtn);
-        }
-        clearBtn.children[0].textContent = "AC"
-    } else {
-        a = "0";
-        b = null;
-        opt = null;
-        isANeg = false;
-        isBNeg = false;
-        displayValue(a);
-        removeHighlight("func-2-clicked");
-    }
-});
-
-equalsBtn.addEventListener("click", () => {
+function onEqualSelect() {
     let res;
     if (a && b && opt) {
         res = calculate(a, b, opt);
@@ -136,11 +97,50 @@ equalsBtn.addEventListener("click", () => {
     removeHighlight("func-2-clicked");
     // can only AC after equals.
     clearBtn.children[0].textContent = "AC";
-});
+}
 
-numNodeArr.forEach((div) => {
-    div.addEventListener("click", () => {
-        isEqualBtnPressed = false;
+function onClearSelect() {
+    if (clearBtn.children[0].textContent === "C") {
+        if (inputingA) {
+            a = "0";
+            displayValue(a);
+            isANeg = false;
+        } else if (inputingB) {
+            b = "0";
+            displayValue(b);
+            isBNeg = false;
+            updateColor(optHolderForClearBtn);
+        }
+        clearBtn.children[0].textContent = "AC"
+    } else {
+        a = "0";
+        b = null;
+        opt = null;
+        isANeg = false;
+        isBNeg = false;
+        displayValue(a);
+        removeHighlight("func-2-clicked");
+    }
+}
+
+function onFuncTwoSelect(div) {
+    isEqualBtnPressed = false;
+    inputingA = false;
+    isANeg = false;
+    inputingB = true;
+    updateColor(div, "func-2-clicked");
+    if (a && b && opt) {
+        inputingB = false;
+        let res = checkFinalResDigits(calculate(a, b, opt));
+        a = res;
+        b = null;
+        displayValue(res);
+    }
+    opt = div.children[0].textContent;
+}
+
+function onNumSelect(div) {
+    isEqualBtnPressed = false;
         optHolderForClearBtn = removeHighlight("func-2-clicked") || optHolderForClearBtn;
         clearBtn.children[0].textContent = "C";
         if (!opt) {
@@ -152,26 +152,27 @@ numNodeArr.forEach((div) => {
             updateBValue(div);
             displayValue(b);
         }
-    })
-})
+}
 
-func2Arr.forEach((div) => {
-    div.addEventListener("click", () => {
-        isEqualBtnPressed = false;
-        inputingA = false;
-        isANeg = false;
-        inputingB = true;
-        updateColor(div, "func-2-clicked");
-        if (a && b && opt) {
-            inputingB = false;
-            let res = checkFinalResDigits(calculate(a, b, opt));
-            a = res;
-            b = null;
-            displayValue(res);
+function onBackBtnSelect() {
+    isEqualBtnPressed = false;
+    if (inputingA) {
+        if (a.length === 1 || (a.length === 2 && a.at(0) === '-')) {
+            a = "0";
+        } else {
+            a = a.slice(0, a.length - 1);
         }
-        opt = div.children[0].textContent;
-    });
-})
+        displayValue(a);
+    } else if (inputingB) {
+        if (b.length === 1 || (a.length === 2 && a.at(0) === '-')) {
+            b = "0";
+            updateColor(optHolderForClearBtn);
+        } else {
+            b = b.slice(0, b.length - 1);
+        }
+        displayValue(b); 
+    }
+}
 
 function updateAValue(div) {
     let value = div.children[0].textContent;
@@ -260,11 +261,6 @@ function returnDigits(value) {
 function preProcess(num) {
     // split by "." and add comma to the integer part
     let [int, decimal] = num.toString().split(".");
-
-    // decimal length for rounding
-    if (decimal !== undefined) {
-        decimalCount = Math.max(decimalCount, decimal.length || 0);
-    }
     return [int, decimal];
 }
 
@@ -309,7 +305,6 @@ function addComma(int, decimal) {
         }    
     return decimal !== undefined ? intWithComma.join("").concat(".").concat(decimal) : intWithComma.join("");
 }
-
 
 function calculate(a, b, opt) {
     switch(opt.charCodeAt(0)) {
