@@ -40,6 +40,91 @@ numNodeArr.forEach(div => div.addEventListener("click", () => onNumSelect(div)))
 
 func2Arr.forEach(div => div.addEventListener("click", () => onFuncTwoSelect(div)));
 
+// keyboard support
+window.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented) {
+        return;
+    }
+    let numKeyPressed;
+    let funcKeyPressed;
+    switch(event.key) {
+        case "%":
+            onPercentSelect();
+            break;
+        case "_":
+            onPosNegSelect();
+            break;
+        case ("="):
+        case ("Enter"):
+            onEqualSelect();
+            break;
+        case "":
+            onPercentSelect();
+            break;
+        case "Delete":
+            onClearSelect();
+            break;
+        case "Backspace":
+            onBackBtnSelect();
+            break;
+        case "/":
+            funcKeyPressed = func2Arr[0];
+            break;
+        case "*":
+            funcKeyPressed = func2Arr[1];
+            break;
+        case "-":
+            funcKeyPressed = func2Arr[2];
+            break;
+        case "+":
+            funcKeyPressed = func2Arr[3];
+            break;
+        case "7":
+            numKeyPressed = numNodeArr[0];
+            break;
+        case "8":
+            numKeyPressed = numNodeArr[1];
+            break;
+        case "9":
+            numKeyPressed = numNodeArr[2];
+            break;
+        case "4":
+            numKeyPressed = numNodeArr[3];
+            break;
+        case "5":
+            numKeyPressed = numNodeArr[4];
+            break;
+        case "6":
+            numKeyPressed = numNodeArr[5];
+            break;
+        case "1":
+            numKeyPressed = numNodeArr[6];
+            break;
+        case "2":
+            numKeyPressed = numNodeArr[7];
+            break;
+        case "3":
+            numKeyPressed = numNodeArr[8];
+            break;
+        case "0":
+            numKeyPressed = numNodeArr[9];
+            break;
+        case ".":
+            numKeyPressed = numNodeArr[10];
+            break;
+        default:
+            return;
+    }
+    if (numKeyPressed) {
+        onNumSelect(numKeyPressed);
+    }
+    if (funcKeyPressed) {
+        onFuncTwoSelect(funcKeyPressed);
+    }
+
+    event.preventDefault();
+})
+
 function onPosNegSelect() {
     if (inputingA) {
         isANeg = !isANeg;
@@ -164,13 +249,15 @@ function onBackBtnSelect() {
         }
         displayValue(a);
     } else if (inputingB) {
-        if (b.length === 1 || (a.length === 2 && a.at(0) === '-')) {
-            b = "0";
-            updateColor(optHolderForClearBtn);
-        } else {
-            b = b.slice(0, b.length - 1);
+        if (b) {
+            if (b.length === 1 || (b.length === 2 && b.at(0) === '-')) {
+                b = "0";
+                updateColor(optHolderForClearBtn);
+            } else {
+                b = b.slice(0, b.length - 1);
+            }
+            displayValue(b); 
         }
-        displayValue(b); 
     }
 }
 
