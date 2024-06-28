@@ -14,9 +14,10 @@ let previousOpt;
 let decimalCount = 0;
 let enteringNum;
 let displayedValue = 0;
-let inputingA = false;
+let inputingA = true;
 let inputingB = false;
 let optHolderForClearBtn;
+let posOrNeg = 1; //default is positive
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
@@ -25,9 +26,22 @@ let equalsBtn = document.querySelector(".equals");
 let clearBtn = document.querySelector(".clear");
 let backBtn = document.querySelector(".delete");
 let percentBtn = document.querySelector(".percent");
+let posNegBtn = document.querySelector(".pos-neg");
 
 let numArr = [...numNodeArr];
 let func2Arr = [...func2NodeArr];
+
+posNegBtn.addEventListener("click", () => {
+    // btn click before nums 
+    posOrNeg *= -1;
+    if (inputingA) {
+        a = (a * -1).toString()
+        displayValue(a);
+    } else if (inputingB) {
+        b = (b * -1).toString();
+        displayValue(b);
+    }
+});
 
 percentBtn.addEventListener("click", () => {
     if (inputingA) {
@@ -41,14 +55,14 @@ percentBtn.addEventListener("click", () => {
 
 backBtn.addEventListener("click", () => {
     if (inputingA) {
-        if (a.length === 1) {
+        if (a.length === 1 || (a.length === 2 && a.charAt(0) === '-')) {
             a = "0";
         } else {
             a = a.slice(0, a.length - 1);
         }
         displayValue(a);
     } else if (inputingB) {
-        if (b.length === 1) {
+        if (b.length === 1 || (a.length === 2 && a.charAt(0) === '-')) {
             b = "0";
             updateColor(optHolderForClearBtn);
         } else {
@@ -219,11 +233,9 @@ function addComma(v) {
     [int, decimal] = v.split(".");
 
     // decimal length for rounding
-    if (decimal === undefined) {
-        console.log("here!!!");
-
-    } else {
+    if (decimal !== undefined) {
         decimalCount = Math.max(decimalCount, decimal.length || 0);
+
     }
     // console.log(decimalCount + "decimalCount: inside addComma/preprocessing");
         let counter = 0;
