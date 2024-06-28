@@ -1,4 +1,4 @@
-var calculate = function(s) {
+var cal = function(s) {
     if (s.length === 1) {
         return s;
     }

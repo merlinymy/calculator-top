@@ -13,13 +13,13 @@ let previousB;
 let previousOpt;
 let decimalCount = 0;
 let enteringNum;
-let displayedValue = 0;
 let inputingA = true;
 let inputingB = false;
 let optHolderForClearBtn;
 let isANeg = false; //default is positive
 let isBNeg = false;
 let isEqualBtnPressed = false;
+let maxDigit = 10;
 
 let displaySpan = document.querySelector(".display span");
 let numNodeArr = document.querySelectorAll(".num");
@@ -114,14 +114,15 @@ clearBtn.addEventListener("click", () => {
 equalsBtn.addEventListener("click", () => {
     let res;
     if (a && b && opt) {
-        res = calculate(a, b, opt, decimalCount);
+        res = calculate(a, b, opt);
         previousB = b;
         previousOpt = opt;
     } else if (a && hasPrevRes) {
-        res = calculate(a, previousB, previousOpt, decimalCount);
+        res = calculate(a, previousB, previousOpt);
     } else if (a && !hasPrevRes) {
         return;
     } 
+    res = checkFinalResDigits(res);
     a = res;
     b = null;
     opt = null;
@@ -146,12 +147,10 @@ numNodeArr.forEach((div) => {
             inputingA = true;
             updateAValue(div);
             displayValue(a);
-            console.log(`value of the first operand is ${a}`);
         } else {
             inputingB = true;
             updateBValue(div);
             displayValue(b);
-            console.log(`value of the sec operand is ${b}`);
         }
     })
 })
@@ -163,23 +162,22 @@ func2Arr.forEach((div) => {
         isANeg = false;
         inputingB = true;
         updateColor(div, "func-2-clicked");
-        // console.log(`inside button a is ${a}, b is ${b}, opt is ${opt}`)
         if (a && b && opt) {
             inputingB = false;
-            let res = calculate(a, b, opt, decimalCount);
+            let res = checkFinalResDigits(calculate(a, b, opt));
             a = res;
             b = null;
             displayValue(res);
-            // console.log(a, b, opt);
         }
         opt = div.children[0].textContent;
-        // console.log(opt.charCodeAt(0));
     });
 })
 
 function updateAValue(div) {
     let value = div.children[0].textContent;
-
+    if (arrSum(returnDigits(a)) >= maxDigit) {
+        return;
+    }
     if (value === "\u2022") {
         if (hasPrevRes) { // for start a new calculation with decimal after equals is pressed
             a = "0.";
@@ -203,6 +201,11 @@ function updateAValue(div) {
 
 function updateBValue(div) {
     let value = div.children[0].textContent;
+
+    if (arrSum(returnDigits(b)) >= maxDigit) {
+        return;
+    }
+
     if (value === "\u2022") {
         if (b === undefined || b=== null) {
             b = "0.";
@@ -221,15 +224,49 @@ function updateBValue(div) {
 }
 
 function displayValue(num) {
-    displaySpan.textContent = addComma(num);
+    if (num === "weed") {
+        displaySpan.textContent = "weed";
+        return;
+    };
+    [int, decimal] = preProcess(num);
+    valueToDisplay = addComma(num, int, decimal);
+    displaySpan.textContent = valueToDisplay;
+    
 }
 
-// working on operator.
-// only on operator can be selected at a time.
-// store the operator in var opt.
-// user can change their minds and update the operator
-// update b is opt is updated.
-// only cal calculate after a, b and opt is populated.
+function checkFinalResDigits(res) {
+    let[intDigit, decimalDigit] = returnDigits(res);
+
+    if (intDigit >= maxDigit || res.toString().includes('e')) {
+        res = Number.parseFloat(res).toExponential(6);
+    } else if (intDigit + decimalDigit >= maxDigit) {
+        let decimalPoint = Math.pow(10, (maxDigit - intDigit));
+        res = Math.round(res * decimalPoint) / decimalPoint;
+    }
+
+    return res;
+}
+
+function returnDigits(value) {
+    if (value === undefined || value === null) {
+        return [0,0];
+    }
+    let [int, decimal] = Number.parseFloat(value).toString().split(".");
+    let intDigit = int.length;
+    let decimalDigit = decimal?.length || 0;
+    return [intDigit, decimalDigit];
+}
+
+function preProcess(num) {
+    // split by "." and add comma to the integer part
+    let [int, decimal] = num.toString().split(".");
+
+    // decimal length for rounding
+    if (decimal !== undefined) {
+        decimalCount = Math.max(decimalCount, decimal.length || 0);
+    }
+    return [int, decimal];
+}
 
 function updateColor(div, styleClass) {
     if(optArr.length === 0) {
@@ -251,18 +288,9 @@ function removeHighlight(styleClass) {
     return prev;
 }
 
-function addComma(v) {
-    console.log(v);
+function addComma(v, int, decimal) {
+    
     let intWithComma = [];
-    // split by "." and add comma to the integer part
-    [int, decimal] = v.split(".");
-
-    // decimal length for rounding
-    if (decimal !== undefined) {
-        decimalCount = Math.max(decimalCount, decimal.length || 0);
-
-    }
-    // console.log(decimalCount + "decimalCount: inside addComma/preprocessing");
         let counter = 0;
         for (let i = int.length - 1; i >= 0; i--) {
             counter++;
@@ -276,20 +304,12 @@ function addComma(v) {
             } else {
                 intWithComma.unshift(int[i]);
             }
-        }
-        console.log(intWithComma);
-    
-    
+        }    
     return decimal !== undefined ? intWithComma.join("").concat(".").concat(decimal) : intWithComma.join("");
 }
 
 
-function calculate(a, b, opt, decimalCount) {
-    // console.log(`inside calculate, a value is ${a}`);
-    // console.log(`inside calculate, b value is ${b}`);
-    // console.log(`inside calculate, operator is ${typeof opt.charCodeAt(0)}`);
-    // opt = updateOpt(opt);
-    let round = Math.pow(10, decimalCount);
+function calculate(a, b, opt) {
     switch(opt.charCodeAt(0)) {
         case 43:
             return add(a, b).toString();
@@ -298,17 +318,15 @@ function calculate(a, b, opt, decimalCount) {
         case 215:
             return multiply(a, b).toString();
         case 247:
+            if (b === "0" && opt.charCodeAt(0) === 247) {
+                return "weed";
+            }
             return divide(a, b).toString();
     }
 }
 
-// function updateOpt(opt) {
-//     let newOpt;
-//     if opt === ""
-// }
-
 function getRoundingDecimal(a, b, operation) {
-    let aDecimal = a.split(".")[1] || "0";
+    let aDecimal = a.toString().split(".")[1] || "0";
     let bDecimal = b.split(".")[1] || "0";
 
     if (operation === "add" || operation === "minus") {
@@ -320,7 +338,6 @@ function getRoundingDecimal(a, b, operation) {
 
 function add(a, b) {
     let roundingDecimal = getRoundingDecimal(a, b, "add");
-    console.log(`inside add function. The rounding decimal is ${roundingDecimal}`);
     a = Number.parseFloat(a);
     b = Number.parseFloat(b);
     return Math.round((a + b) * Math.pow(10, roundingDecimal)) /  Math.pow(10, roundingDecimal);
@@ -353,4 +370,10 @@ function handleDivision(a, b) {
         return roundedRes;
     }
     return dumbRes;
+}
+
+function arrSum(arr) {
+    return arr.reduce((acc, curr) => {
+        return acc += curr;
+    }, 0);
 }
