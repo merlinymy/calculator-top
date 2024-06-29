@@ -46,10 +46,11 @@ button {
 }
 
 .intro-container {
-    flex: 1 1 473px;
+    flex: 0 1 auto;
     padding: 120px 15px 15px 15px;
     gap: 15px;
     border: 0px;
+    width: 600px;
     height: 786.5px;
     display: flex;
     flex-direction: column;
