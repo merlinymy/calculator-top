@@ -1,19 +1,31 @@
 * {
     padding: 0;
     margin: 0;
-    text-align: center;
+    /* text-align: center; */
     box-sizing: border-box;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-body {
+h1 {
+    text-align: center;
+}
+
+body, html {
+    background-color: black;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
     background-color: black;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 98vh;
+    /* height: 98vh; */
     padding: 5px;
+    gap: 25px;
 }
 
 button {
@@ -23,6 +35,7 @@ button {
 
 
 .calculator-container {
+    flex: 0 0 auto;
     display: flex;
     height: 800px;
     max-height: 100vh;
@@ -32,13 +45,26 @@ button {
     /* border: 1.5px solid black; */
 }
 
+.intro-container {
+    flex: 1 1 473px;
+    padding: 120px 15px 15px 15px;
+    gap: 15px;
+    border: 0px;
+    height: 786.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: center;s */
+}
+
 .calculator {
-    flex: 1;
+    flex: 0 0 473px;
     display: flex;
     flex-direction: column;
     padding: 10px;
     gap: 15px;
     border: 0px;
+    height: 786.5px;
 }
 
 .display {
@@ -97,10 +123,13 @@ button {
 } */
 
 span {
-    font-size: 50px;
+    font-size: 45px;
     margin: -100px;
 }
 
+.display span {
+    font-size: 65px;
+}
 
 
 /* color */
@@ -137,4 +166,44 @@ span {
 .func-2-clicked {
     background-color: white;
     color: rgb(255, 165, 0);
+}
+
+@media screen and (max-width: 840px) {
+    .content {
+        flex-direction: column;
+        /* gap: 5px; */
+    }
+    .intro-container {
+        padding-top: 15px;
+    }
+}
+
+ul {
+    list-style-type: square;
+}
+
+th, td {
+    border:1px solid white;
+    padding: 5px;
+}
+
+.name {
+    width: 100px;
+
+}
+.desc {
+    width: 500px;
+    text-align: center;
+}
+
+.guide {
+    display: flex;
+    gap: 5px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 10px;
+    margin-top: auto;
+    color: white;
 }

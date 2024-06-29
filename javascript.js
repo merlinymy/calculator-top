@@ -323,6 +323,7 @@ function displayValue(num) {
 }
 
 function checkFinalResDigits(res) {
+    if (res === "weed") return res;
     let[intDigit, decimalDigit] = returnDigits(res);
 
     if (intDigit >= maxDigit || res.toString().includes('e')) {
@@ -336,6 +337,7 @@ function checkFinalResDigits(res) {
 }
 
 function returnDigits(value) {
+    if (value === "weed") return value;
     if (value === undefined || value === null) {
         return [0,0];
     }
